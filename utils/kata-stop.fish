@@ -7,6 +7,14 @@ end
 set history_savepoint_path "$datapath/stop.history"
 set history_start_path "$datapath/start.history"
 
+# test for parity of commands
+set startmod (stat -c "%Y" $history_start_path)
+set stopmod (stat -c "%Y" $history_savepoint_path)
+if test $stopmod -gt $startmod
+    echo "You must start a Kata before stopping it"
+    exit 1
+end
+
 #echo "saving stop timestamp"
 date +"%s" > "$datapath/stop.timestamp"
 date -R >> "$datapath/stop.timestamp"
