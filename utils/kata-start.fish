@@ -26,4 +26,15 @@ history search --show-time | head -n ( expr $num_lines_for_context \* 2 ) > $his
 date +"%s" > "$datapath/start.timestamp"
 date -R >> "$datapath/start.timestamp"
 
+# start dumping http requests :)
+set http_dump_path "$datapath/start.http.tcpdump"
+set http_dump_pid_path "$datapath/start.http.tcpdump.pid"
+sudo touch "$http_dump_path" # to grab sudo password :)
+rm -f "$http_dump_path"
+rm -f "$http_dump_pid_path"
+sudo tcpdump -w "$http_dump_path" 'tcp port 80 and (((ip[2:2] - ((ip[0]&0xf)<<2)) - ((tcp[12]&0xf0)>>2)) != 0)' &
+set http_dump_id (jobs -lp)
+echo "$http_dump_id" > $http_dump_pid_path
+echo "TCPdump pid=$http_dump_id"
+
 echo "Kata Started"
